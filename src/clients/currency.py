@@ -36,7 +36,7 @@ class CurrencyClient(BaseClient):
          Получение данных о курсах валют.
 
         :param base: Базовая валюта
-        :return:
+        :return: JSON-данные о курсах валют
         """
 
         return await self._request(f"{await self.get_base_url()}?base={base}")

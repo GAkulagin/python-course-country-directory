@@ -27,9 +27,6 @@ async def process_input(location: str) -> None:
     location_info = await Reader().find(location)
     if location_info:
         lines = await Renderer(location_info).render()
-
-        for line in lines:
-            click.secho(line, fg="green")
     else:
         click.secho("Информация отсутствует.", fg="yellow")
 
