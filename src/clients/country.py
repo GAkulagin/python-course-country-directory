@@ -36,7 +36,7 @@ class CountryClient(BaseClient):
         Получение данных о странах.
 
         :param bloc: Регион
-        :return:
+        :return: JSON-данные о странах региона
         """
 
         return await self._request(f"{await self.get_base_url()}/regional_bloc/{bloc}")

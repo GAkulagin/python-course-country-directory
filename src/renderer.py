@@ -3,7 +3,7 @@
 """
 
 from decimal import ROUND_HALF_UP, Decimal
-
+from tabulate import tabulate, SEPARATING_LINE
 from collectors.models import LocationInfoDTO
 
 
@@ -21,22 +21,45 @@ class Renderer:
 
         self.location_info = location_info
 
-    async def render(self) -> tuple[str, ...]:
+    async def render(self) -> None:
         """
-        Форматирование прочитанных данных.
+        Форматирование прочитанных данных и вывод в консоль.
 
-        :return: Результат форматирования
+        :return: None
         """
+        table = [
+            ["Страна", self.location_info.location.name],
+            ["Столица", self.location_info.location.capital],
+            ["Координаты столицы", f"{self.location_info.location.capital_latitude}; {self.location_info.location.capital_longitude}"],
+            ["Регион", self.location_info.location.subregion],
+            ["Языки", await self._format_languages()],
+            ["Площадь", f"{self.location_info.location.area} кв. км."],
+            ["Население страны", f"{await self._format_population()} чел."],
+            ["Курсы валют", await self._format_currency_rates()],
+            ["Часовой пояс", self.location_info.weather.utc_timezone],
+            ["", ""],
+            ["Weather", ""],
+            SEPARATING_LINE,
+            ["Погода", self.location_info.weather.description],
+            ["Температура", f"{self.location_info.weather.temp} °C"],
+            ["Скорость ветра", f"{self.location_info.weather.wind_speed} м.с."],
+            ["Видимость", f"{self.location_info.weather.visibility} м."],
+            ["Время получения данных", self.location_info.weather.date_time.strftime('%d.%m.%Y %H:%M')]
+        ]
+        if len(self.location_info.country_news) > 0:
+            table.extend([
+                ["", ""],
+                [f"Latest news about {self.location_info.location.name}", ""],
+            ])
+        for item in self.location_info.country_news:
+            table.extend([
+                SEPARATING_LINE,
+                [item.title, ""],
+                ["Источник", item.source],
+                ["Дата публикации", item.published_at.strftime('%d.%m.%Y %H:%M')],
+            ])
 
-        return (
-            f"Страна: {self.location_info.location.name}",
-            f"Столица: {self.location_info.location.capital}",
-            f"Регион: {self.location_info.location.subregion}",
-            f"Языки: {await self._format_languages()}",
-            f"Население страны: {await self._format_population()} чел.",
-            f"Курсы валют: {await self._format_currency_rates()}",
-            f"Погода: {self.location_info.weather.temp} °C",
-        )
+        print(tabulate(table, ["General", ""], tablefmt="simple"))
 
     async def _format_languages(self) -> str:
         """

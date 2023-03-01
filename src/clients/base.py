@@ -25,5 +25,5 @@ class BaseClient(ABC):
         Формирование и выполнение запроса.
 
         :param endpoint:
-        :return:
+        :return: JSON
         """

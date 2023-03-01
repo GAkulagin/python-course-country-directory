@@ -100,7 +100,7 @@ The project contains a special `Makefile` that provides shortcuts for a set of c
 
 5. Autotests:
     ```shell
-    make test
+    docker compose run app pytest --cov=/src --cov-report html:htmlcov --cov-report term --cov-config=/src/tests/.coveragerc -vv
     ```
 
     The test coverage report will be located at `src/htmlcov/index.html`. 

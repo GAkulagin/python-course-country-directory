@@ -1,8 +1,10 @@
 """
 Описание моделей данных (DTO).
 """
+from datetime import datetime
+from typing import Optional
 
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel, validator
 
 
 class HashableBaseModel(BaseModel):
@@ -21,11 +23,13 @@ class LocationDTO(HashableBaseModel):
     .. code-block::
 
         LocationDTO(
+            country="Aland",
             capital="Mariehamn",
             alpha2code="AX",
         )
     """
 
+    country: str
     capital: str
     alpha2code: str = Field(min_length=2, max_length=2)  # country alpha‑2 code
 
@@ -89,10 +93,14 @@ class CountryDTO(BaseModel):
             },
             name="\u00c5land Islands",
             population=28875,
+            area=1555.0,
             subregion="Northern Europe",
             timezones=[
                 "UTC+02:00",
             ],
+            capital_latitude=20.55,
+            capital_longitude=13.44,
+
         )
     """
 
@@ -106,6 +114,9 @@ class CountryDTO(BaseModel):
     population: int
     subregion: str
     timezones: list[str]
+    area: Optional[float]
+    capital_latitude: float
+    capital_longitude: float
 
 
 class CurrencyRatesDTO(BaseModel):
@@ -140,6 +151,9 @@ class WeatherInfoDTO(BaseModel):
             humidity=54,
             wind_speed=4.63,
             description="scattered clouds",
+            visibility=10000,
+            utc_timezone=3600,
+            date_time=2023-02-15 15:22:40
         )
     """
 
@@ -148,6 +162,36 @@ class WeatherInfoDTO(BaseModel):
     humidity: int
     wind_speed: float
     description: str
+    visibility: int
+    utc_timezone: int
+    date_time: datetime
+
+
+class NewsDTO(BaseModel):
+    """
+       Модель данных о новости.
+
+       .. code-block::
+
+           NewsDTO(
+               source="ABC News",
+               author="STEVE KARNOWSKI Associated Press",
+               published_at=2023-02-15 15:22:40,
+               title="PolyMet mine in Minnesota becomes NewRange Copper Nickel",
+               description="sample text"
+           )
+       """
+    source: str
+    author: Optional[str]
+    published_at: datetime
+    title: str
+    description: str
+
+    @validator("author")
+    def validate_author(cls, value):
+        if value is None or value == "":
+            return 'unknown'
+        return value
 
 
 class LocationInfoDTO(BaseModel):
@@ -180,6 +224,7 @@ class LocationInfoDTO(BaseModel):
                 },
                 name="\u00c5land Islands",
                 population=28875,
+                area=1555.0,
                 subregion="Northern Europe",
                 timezones=[
                     "UTC+02:00",
@@ -191,13 +236,19 @@ class LocationInfoDTO(BaseModel):
                 humidity=54,
                 wind_speed=4.63,
                 description="scattered clouds",
+                visibility=10000,
+                utc_timezone=3600,
+                date_time=2023-02-15 15:22:40
             ),
             currency_rates={
                 "EUR": 0.016503,
             },
+            capital_latitude=20.55,
+            capital_longitude=13.44,
         )
     """
 
     location: CountryDTO
     weather: WeatherInfoDTO
     currency_rates: dict[str, float]
+    country_news: Optional[list[NewsDTO]]

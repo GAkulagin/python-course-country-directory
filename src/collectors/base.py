@@ -16,17 +16,29 @@ class BaseCollector(ABC):
 
     @abstractmethod
     async def collect(self, **kwargs: Any) -> Optional[Iterable[Any]]:
-        ...
+        """
+        Сбор данных из JSON в кэш.
+
+        :return: Итерируемая коллекция моделей
+        """
 
     @staticmethod
     @abstractmethod
     async def get_file_path(**kwargs: Any) -> str:
-        ...
+        """
+        Получение пути к файлу.
+
+        :return:
+        """
 
     @staticmethod
     @abstractmethod
     async def get_cache_ttl() -> int:
-        ...
+        """
+        Получение времени жизни кэша.
+
+        :return:
+        """
 
     async def cache_invalid(self, **kwargs: Any) -> bool:
         """
